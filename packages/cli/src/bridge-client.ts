@@ -10,6 +10,12 @@ export interface BridgeEvent {
   data?: unknown;
   error?: string;
   result?: BridgeResult;
+  persisted?: PersistedArtifacts;
+}
+
+export interface PersistedArtifacts {
+  written: string[];
+  skipped: string[];
 }
 
 /** The final result from a pipeline run. */
@@ -120,8 +126,8 @@ export class BridgeClient {
           reject(
             new Error(
               `Cannot connect to bridge on port ${this.#port}.\n` +
-                "Make sure VS Code is running with the Agentic Pipeline extension active.\n" +
-                "The bridge auto-starts with VS Code, or run: Agentic Pipeline: Start CLI Bridge",
+                "Make sure VS Code is running with the Sajkatav extension active.\n" +
+                "The bridge auto-starts with VS Code, or run: Sajkatav: Start CLI Bridge",
             ),
           );
         } else {

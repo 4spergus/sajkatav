@@ -1,12 +1,12 @@
 {
-  "name": "agentic-pipeline-vscode",
-  "displayName": "Agentic Pipeline",
+  "name": "sajkatav-vscode-extension",
+  "displayName": "Sajkatav",
   "description": "Orchestrator → Spec → Coder → Tester pipeline via GitHub Copilot",
   "version": "1.0.0",
-  "publisher": "agentic-pipeline",
+  "publisher": "4spergus",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anthropic-ai/agentic-pipeline.git",
+    "url": "https://github.com/4spergus/sajkatav.git",
     "directory": "packages/vscode-extension"
   },
   "license": "MIT",
@@ -19,10 +19,9 @@
     "Testing"
   ],
   "activationEvents": [
-    "onStartupFinished",
-    "onCommand:agentic-pipeline.run",
-    "onCommand:agentic-pipeline.startBridge",
-    "onCommand:agentic-pipeline.stopBridge"
+    "onCommand:sajkatav.run",
+    "onCommand:sajkatav.startBridge",
+    "onCommand:sajkatav.stopBridge"
   ],
   "main": "./out/extension.js",
   "scripts": {
@@ -34,8 +33,8 @@
   "contributes": {
     "chatParticipants": [
       {
-        "id": "agentic-pipeline.agent",
-        "fullName": "Agentic Pipeline",
+        "id": "sajkatav.agent",
+        "fullName": "Sajkatav",
         "name": "pipeline",
         "description": "Run the Orchestrator → Spec → Coder → Tester pipeline",
         "isSticky": true,
@@ -65,42 +64,42 @@
     ],
     "commands": [
       {
-        "command": "agentic-pipeline.run",
-        "title": "Agentic Pipeline: Run"
+        "command": "sajkatav.run",
+        "title": "Sajkatav: Run"
       },
       {
-        "command": "agentic-pipeline.startBridge",
-        "title": "Agentic Pipeline: Start CLI Bridge"
+        "command": "sajkatav.startBridge",
+        "title": "Sajkatav: Start CLI Bridge"
       },
       {
-        "command": "agentic-pipeline.stopBridge",
-        "title": "Agentic Pipeline: Stop CLI Bridge"
+        "command": "sajkatav.stopBridge",
+        "title": "Sajkatav: Stop CLI Bridge"
       }
     ],
     "configuration": {
-      "title": "Agentic Pipeline",
+      "title": "Sajkatav",
       "properties": {
-        "agenticPipeline.models.orchestrator": {
+        "sajkatav.models.orchestrator": {
           "type": "string",
           "default": "gpt-4o",
           "description": "Model for the Orchestrator"
         },
-        "agenticPipeline.models.specGenerator": {
+        "sajkatav.models.specGenerator": {
           "type": "string",
           "default": "gpt-4o",
           "description": "Model for the Spec Generator"
         },
-        "agenticPipeline.models.coder": {
+        "sajkatav.models.coder": {
           "type": "string",
           "default": "gpt-4o",
           "description": "Model for the Coder"
         },
-        "agenticPipeline.models.tester": {
+        "sajkatav.models.tester": {
           "type": "string",
           "default": "gpt-4o",
           "description": "Model for the Tester"
         },
-        "agenticPipeline.tester.framework": {
+        "sajkatav.tester.framework": {
           "type": "string",
           "enum": [
             "vitest",
@@ -110,22 +109,22 @@
           "default": "vitest",
           "description": "Test framework"
         },
-        "agenticPipeline.bridge.autoStart": {
+        "sajkatav.bridge.autoStart": {
           "type": "boolean",
           "default": true,
           "description": "Auto-start the CLI bridge server on activation"
         },
-        "agenticPipeline.bridge.port": {
+        "sajkatav.bridge.port": {
           "type": "number",
           "default": 9786,
           "description": "Port for the CLI bridge server"
         },
-        "agenticPipeline.freeTier.enabled": {
+        "sajkatav.freeTier.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Enable free tier models (GPT-4o, GPT-4.1) for the pipeline"
         },
-        "agenticPipeline.freeTier.models": {
+        "sajkatav.freeTier.models": {
           "type": "array",
           "items": {
             "type": "string"
@@ -140,7 +139,7 @@
     }
   },
   "devDependencies": {
-    "@anthropic-ai/agentic-pipeline": "1.0.0",
+    "@sajkatav/core": "1.0.0",
     "@types/node": "^25.5.0",
     "@types/vscode": "^1.93.0",
     "esbuild": "^0.24.0"

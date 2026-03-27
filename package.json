@@ -1,7 +1,7 @@
 {
-  "name": "web-agentic-pipeline",
+  "name": "sajkatav",
   "version": "1.0.0",
-  "description": "Agentic pipeline — Orchestrator, Spec Generator, Coder, Tester — powered by Copilot",
+  "description": "Sajkatav — Orchestrator, Spec Generator, Coder, Tester — powered by Copilot",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -18,9 +18,9 @@
     "typecheck": "tsc --build --force",
     "typecheck:watch": "tsc --build --watch",
     "clean": "rm -rf packages/core/dist packages/cli/dist packages/vscode-extension/out packages/*/tsconfig.tsbuildinfo",
-    "cli": "node packages/cli/bin/agentic.js",
+    "cli": "node packages/cli/bin/sajkatav.js",
     "package:ext": "cd packages/vscode-extension && npm run package",
-    "install:ext": "./scripts/extension-setup.sh ./packages/vscode-extension/agentic-pipeline-vscode-1.0.0.vsix"
+    "install:ext": "./scripts/extension-setup.sh ./packages/vscode-extension/sajkatav-vscode-extension-1.0.0.vsix"
   },
   "license": "MIT",
   "engines": {

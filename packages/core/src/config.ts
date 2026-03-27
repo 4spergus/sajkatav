@@ -7,7 +7,7 @@ import type {
  * Default configuration used when none is provided.
  */
 export const defaultConfig: AppConfig = {
-  name: 'agentic-pipeline',
+  name: 'sajkatav',
   continueOnError: false,
   retries: 1,
 

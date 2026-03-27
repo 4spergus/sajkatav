@@ -1,5 +1,5 @@
 /**
- * @anthropic-ai/agentic-pipeline
+ * @sajkatav/core
  *
  * A configurable agentic pipeline library.
  * All model access goes through a Provider interface — in practice, Copilot.
@@ -8,7 +8,7 @@
  * Fully configurable: add, remove, reorder, or replace any agent.
  *
  * @example
- * import { Pipeline, agents } from '@anthropic-ai/agentic-pipeline';
+ * import { Pipeline, agents } from '@sajkatav/core';
  *
  * const pipeline = Pipeline.create({
  *   provider,  // A CopilotProvider instance

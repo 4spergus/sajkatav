@@ -1,8 +1,9 @@
 import * as http from "node:http";
 import * as vscode from "vscode";
-import { Pipeline, agents, Context } from "@anthropic-ai/agentic-pipeline";
-import type { StepResult } from "@anthropic-ai/agentic-pipeline";
+import { Pipeline, agents } from "@sajkatav/core";
+import type { StepResult } from "@sajkatav/core";
 import { CopilotProvider } from "./provider.js";
+import { persistArtifacts } from "./artifacts.js";
 
 interface AgenticConfig {
   shouldUseFreeTier: boolean;
@@ -58,7 +59,7 @@ export class BridgeServer {
         `Bridge server listening on http://127.0.0.1:${this.#port}`,
       );
       vscode.window.showInformationMessage(
-        `Agentic Pipeline bridge running on port ${this.#port}`,
+        `Sajkatav Pipeline bridge running on port ${this.#port}`,
       );
     });
 
@@ -66,7 +67,7 @@ export class BridgeServer {
       this.#log.error(`Bridge error: ${err.message}`);
       if (err.code === "EADDRINUSE") {
         vscode.window.showWarningMessage(
-          `Port ${this.#port} in use. Change agenticPipeline.bridge.port in settings.`,
+          `Port ${this.#port} in use. Change sajkatav.bridge.port in settings.`,
         );
       }
     });
@@ -77,7 +78,7 @@ export class BridgeServer {
       this.#server.close();
       this.#server = null;
       this.#log.info("Bridge server stopped");
-      vscode.window.showInformationMessage("Agentic Pipeline bridge stopped");
+      vscode.window.showInformationMessage("Sajkatav Pipeline bridge stopped");
     }
   }
 
@@ -195,7 +196,18 @@ export class BridgeServer {
       workDir: workDir ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
     });
 
-    res.write(JSON.stringify({ event: "done", result: ctx.toJSON() }) + "\n");
+    const persisted = await persistArtifacts(ctx);
+    this.#log.info(
+      `Persisted artifacts: ${persisted.written.length} written, ${persisted.skipped.length} skipped`,
+    );
+
+    res.write(
+      JSON.stringify({
+        event: "done",
+        result: ctx.toJSON(),
+        persisted,
+      }) + "\n",
+    );
     res.end();
   }
 
@@ -241,7 +253,7 @@ export class BridgeServer {
 // ── Helpers ──────────────────────────────────────────────────────
 
 function getConfig(): AgenticConfig {
-  const cfg = vscode.workspace.getConfiguration("agenticPipeline");
+  const cfg = vscode.workspace.getConfiguration("sajkatav");
 
   return {
     orchestratorModel: cfg.get<string>("models.orchestrator", "gpt-4o"),

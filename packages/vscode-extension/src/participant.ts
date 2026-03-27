@@ -1,11 +1,8 @@
-import * as vscode from 'vscode';
-import {
-  Pipeline,
-  Context,
-  agents,
-} from '@anthropic-ai/agentic-pipeline';
-import type { StepResult } from '@anthropic-ai/agentic-pipeline';
-import { CopilotProvider } from './provider.js';
+import * as vscode from "vscode";
+import { Pipeline, Context, agents } from "@sajkatav/core";
+import type { StepResult } from "@sajkatav/core";
+import { CopilotProvider } from "./provider.js";
+import { persistArtifacts } from "./artifacts.js";
 
 let lastCtx: Context | null = null;
 
@@ -25,7 +22,7 @@ export function registerParticipant(
   log: vscode.LogOutputChannel,
 ): void {
   const participant = vscode.chat.createChatParticipant(
-    'agentic-pipeline.agent',
+    "sajkatav.agent",
     (
       request: vscode.ChatRequest,
       _chatCtx: vscode.ChatContext,
@@ -34,7 +31,7 @@ export function registerParticipant(
     ) => handleRequest(request, stream, _token, log),
   );
 
-  participant.iconPath = new vscode.ThemeIcon('beaker');
+  participant.iconPath = new vscode.ThemeIcon("beaker");
   extCtx.subscriptions.push(participant);
 }
 
@@ -47,30 +44,30 @@ async function handleRequest(
   _token: vscode.CancellationToken,
   log: vscode.LogOutputChannel,
 ): Promise<{ metadata: Record<string, unknown> } | void> {
-  const cmd = request.command ?? 'run';
+  const cmd = request.command ?? "run";
   const prompt = request.prompt;
 
   try {
     switch (cmd) {
-      case 'plan':
-        return await runSubset(prompt, ['orchestrator'], stream, log);
-      case 'spec':
+      case "plan":
+        return await runSubset(prompt, ["orchestrator"], stream, log);
+      case "spec":
         return await runSubset(
           prompt,
-          ['orchestrator', 'spec-generator'],
+          ["orchestrator", "spec-generator"],
           stream,
           log,
         );
-      case 'code':
+      case "code":
         return await runSubset(
           prompt,
-          ['orchestrator', 'spec-generator', 'coder'],
+          ["orchestrator", "spec-generator", "coder"],
           stream,
           log,
         );
-      case 'test':
-        return await runSingle(prompt, 'tester', stream, log);
-      case 'run':
+      case "test":
+        return await runSingle(prompt, "tester", stream, log);
+      case "run":
       default:
         return await runFull(prompt, stream, log);
     }
@@ -91,7 +88,7 @@ async function runFull(
 ): Promise<{ metadata: Record<string, unknown> }> {
   const pipeline = buildPipeline();
 
-  stream.markdown('## 🚀 Agentic Pipeline\n\n');
+  stream.markdown("## 🚀 Sajkatav Pipeline\n\n");
   stream.markdown(`**Task:** ${prompt}\n\n---\n\n`);
 
   attachStreamListeners(pipeline, stream, log);
@@ -101,8 +98,18 @@ async function runFull(
     workDir: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
   });
 
+  const persisted = await persistArtifacts(ctx);
+  log.info(
+    `Persisted artifacts: ${persisted.written.length} written, ${persisted.skipped.length} skipped`,
+  );
+
   lastCtx = ctx;
-  renderResults(ctx, stream);
+  renderResults(
+    ctx,
+    stream,
+    persisted.written.length,
+    persisted.skipped.length,
+  );
 
   return { metadata: { success: true, files: ctx.files } };
 }
@@ -123,9 +130,7 @@ async function runSubset(
     agents: subset,
   });
 
-  stream.markdown(
-    `## Running: ${subset.map((a) => a.name).join(' → ')}\n\n`,
-  );
+  stream.markdown(`## Running: ${subset.map((a) => a.name).join(" → ")}\n\n`);
   attachStreamListeners(pipeline, stream, log);
 
   const ctx = await pipeline.run({
@@ -133,8 +138,18 @@ async function runSubset(
     workDir: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
   });
 
+  const persisted = await persistArtifacts(ctx);
+  log.info(
+    `Persisted artifacts: ${persisted.written.length} written, ${persisted.skipped.length} skipped`,
+  );
+
   lastCtx = ctx;
-  renderResults(ctx, stream);
+  renderResults(
+    ctx,
+    stream,
+    persisted.written.length,
+    persisted.skipped.length,
+  );
 
   return { metadata: { success: true } };
 }
@@ -165,18 +180,28 @@ async function runSingle(
       request: prompt || lastCtx.request,
       workDir: lastCtx.workDir,
     });
-    for (const key of ['plan', 'spec', 'code', 'tests'] as const) {
+    for (const key of ["plan", "spec", "code", "tests"] as const) {
       if (lastCtx.has(key)) ctx.set(key, lastCtx.get(key));
     }
   }
 
   const result = await pipeline.run({
-    request: prompt || lastCtx?.request || 'Generate tests',
+    request: prompt || lastCtx?.request || "Generate tests",
     workDir: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
   });
 
+  const persisted = await persistArtifacts(result);
+  log.info(
+    `Persisted artifacts: ${persisted.written.length} written, ${persisted.skipped.length} skipped`,
+  );
+
   lastCtx = result;
-  renderResults(result, stream);
+  renderResults(
+    result,
+    stream,
+    persisted.written.length,
+    persisted.skipped.length,
+  );
 
   return { metadata: { success: true } };
 }
@@ -184,22 +209,13 @@ async function runSingle(
 // ── Helpers ──────────────────────────────────────────────────────
 
 function getConfig(): AgenticConfig {
-  const cfg = vscode.workspace.getConfiguration('agenticPipeline');
+  const cfg = vscode.workspace.getConfiguration("sajkatav");
   return {
-    orchestratorModel: cfg.get<string>(
-      'models.orchestrator',
-      'gpt-4o',
-    ),
-    specGeneratorModel: cfg.get<string>(
-      'models.specGenerator',
-      'gpt-4o',
-    ),
-    coderModel: cfg.get<string>('models.coder', 'gpt-4o'),
-    testerModel: cfg.get<string>(
-      'models.tester',
-      'gpt-4o',
-    ),
-    testFramework: cfg.get<string>('tester.framework', 'vitest'),
+    orchestratorModel: cfg.get<string>("models.orchestrator", "gpt-4o"),
+    specGeneratorModel: cfg.get<string>("models.specGenerator", "gpt-4o"),
+    coderModel: cfg.get<string>("models.coder", "gpt-4o"),
+    testerModel: cfg.get<string>("models.tester", "gpt-4o"),
+    testFramework: cfg.get<string>("tester.framework", "vitest"),
   };
 }
 
@@ -221,10 +237,10 @@ function buildPipeline(): Pipeline {
 }
 
 const AGENT_ICONS: Record<string, string> = {
-  orchestrator: '🧠',
-  'spec-generator': '📋',
-  coder: '💻',
-  tester: '🧪',
+  orchestrator: "🧠",
+  "spec-generator": "📋",
+  coder: "💻",
+  tester: "🧪",
 };
 
 function attachStreamListeners(
@@ -233,9 +249,9 @@ function attachStreamListeners(
   log: vscode.LogOutputChannel,
 ): void {
   pipeline.on(
-    'agent:start',
+    "agent:start",
     ({ name, role }: { name: string; role: string }) => {
-      const icon = AGENT_ICONS[role] ?? '▶';
+      const icon = AGENT_ICONS[role] ?? "▶";
       stream.markdown(`### ${icon} ${name}\n\n`);
       stream.progress(`${name} is working...`);
       log.info(`Agent started: ${name}`);
@@ -243,21 +259,25 @@ function attachStreamListeners(
   );
 
   pipeline.on(
-    'agent:done',
+    "agent:done",
     ({ name, result }: { name: string; result: StepResult }) => {
-      if (result.data && typeof result.data === 'object' && !('raw' in result.data)) {
+      if (
+        result.data &&
+        typeof result.data === "object" &&
+        !("raw" in result.data)
+      ) {
         stream.markdown(
-          '```json\n' + JSON.stringify(result.data, null, 2) + '\n```\n\n',
+          "```json\n" + JSON.stringify(result.data, null, 2) + "\n```\n\n",
         );
       } else if (result.output) {
-        stream.markdown(result.output.substring(0, 3000) + '\n\n');
+        stream.markdown(result.output.substring(0, 3000) + "\n\n");
       }
       log.info(`Agent done: ${name}`);
     },
   );
 
   pipeline.on(
-    'agent:error',
+    "agent:error",
     ({ name, result }: { name: string; result: StepResult }) => {
       stream.markdown(`**${name} failed:** ${result.output}\n\n`);
       log.error(`Agent failed: ${name}: ${result.output}`);
@@ -268,11 +288,17 @@ function attachStreamListeners(
 function renderResults(
   ctx: Context,
   stream: vscode.ChatResponseStream,
+  writtenCount = 0,
+  skippedCount = 0,
 ): void {
-  stream.markdown('---\n\n### ✅ Pipeline Complete\n\n');
+  stream.markdown("---\n\n### ✅ Pipeline Complete\n\n");
+
+  stream.markdown(
+    `**Applied artifacts:** ${writtenCount} written${skippedCount > 0 ? `, ${skippedCount} skipped (outside workspace)` : ""}\n\n`,
+  );
 
   if (ctx.files.length > 0) {
-    stream.markdown('**Files:**\n');
+    stream.markdown("**Files:**\n");
     for (const f of ctx.files) {
       stream.markdown(`- \`${f}\`\n`);
     }

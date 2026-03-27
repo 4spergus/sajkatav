@@ -1,10 +1,10 @@
 {
-  "name": "@anthropic-ai/agentic-pipeline-cli",
+  "name": "@sajkatav/cli",
   "version": "1.0.0",
   "description": "CLI for the agentic pipeline — connects to Copilot via the VS Code bridge",
   "type": "module",
   "bin": {
-    "agentic": "./bin/agentic.js"
+    "sajkatav": "./bin/index.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +25,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "start": "node bin/agentic.js"
+    "start": "node bin/index.js"
   },
   "dependencies": {
     "commander": "^12.1.0",

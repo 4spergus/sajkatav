@@ -1,5 +1,5 @@
 {
-  "name": "@anthropic-ai/agentic-pipeline",
+  "name": "@sajkatav/core",
   "version": "1.0.0",
   "description": "Configurable agentic pipeline library — Orchestrator, Spec Generator, Coder, Tester — powered by Copilot",
   "type": "module",
@@ -30,8 +30,8 @@
     "access": "public"
   },
   "keywords": [
-    "agentic",
-    "pipeline",
+    "sajkatav",
+    "core",
     "copilot",
     "ai",
     "agents",
@@ -39,7 +39,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/anthropic-ai/agentic-pipeline.git",
+    "url": "https://github.com/4spergus/sajkatav.git",
     "directory": "packages/core"
   },
   "license": "MIT"

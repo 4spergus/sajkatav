@@ -6,7 +6,7 @@ interface ModelsOptions {
 }
 
 /**
- * `agentic models` — List available Copilot models.
+ * `sajkatav models` — List available Copilot models.
  */
 export async function models(options: ModelsOptions): Promise<void> {
   const port = options.port ?? "9786";

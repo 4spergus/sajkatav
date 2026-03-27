@@ -6,7 +6,7 @@ interface StatusOptions {
 }
 
 /**
- * `agentic status` — Check if the VS Code bridge is running.
+ * `sajkatav status` — Check if the VS Code bridge is running.
  */
 export async function status(options: StatusOptions): Promise<void> {
   const port = options.port ?? '9786';
@@ -23,7 +23,7 @@ export async function status(options: StatusOptions): Promise<void> {
     console.log(chalk.red('✗ Not reachable'));
     console.log(
       chalk.dim(
-        '\nMake sure VS Code is running with the Agentic Pipeline extension.\n',
+        '\nMake sure VS Code is running with the Sajkatav extension active.\n',
       ),
     );
   }

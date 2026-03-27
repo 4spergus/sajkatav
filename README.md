@@ -1,4 +1,4 @@
-# Agentic Pipeline
+# Sajkatav
 
 A configurable, reusable agentic development pipeline powered entirely by **GitHub Copilot**.
 
@@ -70,32 +70,32 @@ The CLI connects to VS Code through a local bridge server (auto-started by the e
 
 ```bash
 # Check connection
-npx agentic status
+npx sajkatav status
 
 # Run the full pipeline
-npx agentic run "Build a REST API with Express"
+npx sajkatav run "Build a REST API with Express"
 
 # Run specific agents only
-npx agentic run -a orchestrator,coder "Add a /users endpoint"
+npx sajkatav run -a orchestrator,coder "Add a /users endpoint"
 
 # Interactive mode
-npx agentic run -i
+npx sajkatav run -i
 
 # List available Copilot models
-npx agentic models
+npx sajkatav models
 ```
 
 ### 4. Use as a library
 
 ```ts
-import { Pipeline, agents } from "@anthropic-ai/agentic-pipeline";
+import { Pipeline, agents } from "@sajkatav/core";
 import type {
   Provider,
   Plan,
   Spec,
   CodeOutput,
   TestOutput,
-} from "@anthropic-ai/agentic-pipeline";
+} from "@sajkatav/core";
 
 // You provide the provider — in VS Code, that's CopilotProvider
 const pipeline = Pipeline.create({
@@ -120,8 +120,8 @@ console.log(ctx.files); // All file paths produced
 ### 5. Custom agents
 
 ```ts
-import { Agent, Pipeline } from "@anthropic-ai/agentic-pipeline";
-import type { StepResult } from "@anthropic-ai/agentic-pipeline";
+import { Agent, Pipeline } from "@sajkatav/core";
+import type { StepResult } from "@sajkatav/core";
 
 const reviewer = Agent.create({
   name: "Reviewer",
@@ -151,7 +151,7 @@ const pipeline = Pipeline.create({
 ┌──────────────┐         HTTP (localhost:9786)         ┌──────────────────┐
 │              │  ──── POST /run {prompt} ──────────▶   │                  │
 │   CLI        │                                        │  VS Code         │
-│  (agentic)   │  ◀──── NDJSON stream ──────────────   │  Extension       │
+│  (sajkatav)   │  ◀──── NDJSON stream ──────────────   │  Extension       │
 │              │         {event, data}                  │  (bridge.js)     │
 └──────────────┘                                        │       │          │
                                                         │       ▼          │
@@ -182,13 +182,13 @@ packages/
     dist/                        # SWC-compiled output + .d.ts
 
   cli/                           # CLI (thin client → bridge)
-    bin/agentic.js               # Entry point (JS shim)
+    bin/index.js               # Entry point (JS shim)
     src/
       bridge-client.ts           # HTTP client for bridge
       commands/
-        run.ts                   # agentic run
-        status.ts                # agentic status
-        models.ts                # agentic models
+        run.ts                   # sajkatav run
+        status.ts                # sajkatav status
+        models.ts                # sajkatav models
     dist/                        # SWC-compiled output
 
   vscode-extension/              # VS Code Extension
@@ -206,32 +206,15 @@ packages/
 
 ```json
 {
-  "agenticPipeline.models.orchestrator": "claude-opus-4-20250514",
-  "agenticPipeline.models.specGenerator": "claude-sonnet-4-20250514",
-  "agenticPipeline.models.coder": "claude-sonnet-4-20250514",
-  "agenticPipeline.models.tester": "claude-sonnet-4-20250514",
-  "agenticPipeline.tester.framework": "vitest",
-  "agenticPipeline.bridge.autoStart": true,
-  "agenticPipeline.bridge.port": 9786,
-  "agenticPipeline.freeTier.enabled": true,
-  "agenticPipeline.freeTier.models": ["GPT-4o", "GPT-4.1"]
-}
-```
-
-### Project Config (optional)
-
-Run `agentic init` to create `pipeline.config.json`:
-
-```json
-{
-  "name": "my-pipeline",
-  "models": {
-    "orchestrator": "claude-opus-4-20250514",
-    "specGenerator": "claude-sonnet-4-20250514",
-    "coder": "claude-sonnet-4-20250514",
-    "tester": "claude-sonnet-4-20250514"
-  },
-  "tester": { "framework": "vitest" }
+  "sajkatav.models.orchestrator": "claude-opus-4-20250514",
+  "sajkatav.models.specGenerator": "claude-sonnet-4-20250514",
+  "sajkatav.models.coder": "claude-sonnet-4-20250514",
+  "sajkatav.models.tester": "claude-sonnet-4-20250514",
+  "sajkatav.tester.framework": "vitest",
+  "sajkatav.bridge.autoStart": true,
+  "sajkatav.bridge.port": 9786,
+  "sajkatav.freeTier.enabled": true,
+  "sajkatav.freeTier.models": ["GPT-4o", "GPT-4.1"]
 }
 ```
 
@@ -256,7 +239,7 @@ npm run build:ext     # esbuild bundle
 npm run clean
 
 # Run CLI
-node packages/cli/bin/agentic.js --help
+node packages/cli/bin/index.js --help
 
 # Package extension as .vsix
 cd packages/vscode-extension && npx @vscode/vsce package --no-dependencies

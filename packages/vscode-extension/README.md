@@ -1,6 +1,6 @@
-# Agentic Pipeline (VS Code Extension)
+# Sajkatav (VS Code Extension)
 
-VS Code extension for running the Agentic Pipeline through GitHub Copilot Chat.
+VS Code extension for running the Sajkatav pipeline through GitHub Copilot Chat.
 
 Main command surface:
 - `@pipeline /run <task>`

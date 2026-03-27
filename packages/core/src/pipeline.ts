@@ -43,7 +43,7 @@ export class Pipeline extends EventEmitter<PipelineEvents> {
   readonly options: { continueOnError: boolean; retries: number };
 
   constructor({
-    name = 'agentic-pipeline',
+    name = 'sajkatav',
     agents,
     provider,
     continueOnError = false,

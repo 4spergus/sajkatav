@@ -3,7 +3,7 @@ import type {
   Provider,
   Message,
   ModelOptions,
-} from '@anthropic-ai/agentic-pipeline';
+} from '@sajkatav/core';
 
 /**
  * CopilotProvider — the ONLY model provider.

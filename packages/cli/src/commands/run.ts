@@ -20,7 +20,7 @@ const AGENT_ICONS: Record<string, string> = {
 };
 
 /**
- * `agentic run` — Run the pipeline via the Copilot bridge.
+ * `sajkatav run` — Run the pipeline via the Copilot bridge.
  */
 export async function run(
   promptParts: string[] | undefined,
@@ -35,12 +35,12 @@ export async function run(
     console.error(chalk.red('\n✗ Cannot reach the Copilot bridge.\n'));
     console.log(
       chalk.dim(
-        'Make sure VS Code is running with the Agentic Pipeline extension.',
+        'Make sure VS Code is running with the Sajkatav extension active.',
       ),
     );
     console.log(
       chalk.dim(
-        'The bridge auto-starts, or run command: "Agentic Pipeline: Start CLI Bridge"\n',
+        'The bridge auto-starts, or run command: "Sajkatav: Start CLI Bridge"\n',
       ),
     );
     process.exit(1);
@@ -63,7 +63,7 @@ async function once(
     ?.split(',')
     .map((r: string) => r.trim());
 
-  console.log(chalk.bold('\n🚀 Agentic Pipeline\n'));
+  console.log(chalk.bold('\n🚀 Sajkatav Pipeline\n'));
   console.log(chalk.dim(`Bridge: 127.0.0.1:${options.port ?? '9786'}`));
   console.log(chalk.dim(`Work dir: ${workDir}`));
   if (agentRoles) console.log(chalk.dim(`Agents: ${agentRoles.join(', ')}`));
@@ -71,6 +71,9 @@ async function once(
 
   type Spinner = ReturnType<typeof ora>;
   let spinner: Spinner | null = null;
+  let persistedWritten = 0;
+  let persistedSkipped = 0;
+  let hasPersistedSummary = false;
 
   try {
     const result = await client.run(
@@ -94,6 +97,11 @@ async function once(
             break;
           }
           case 'done':
+            if (event.persisted) {
+              persistedWritten = event.persisted.written.length;
+              persistedSkipped = event.persisted.skipped.length;
+              hasPersistedSummary = true;
+            }
             break;
         }
       },
@@ -101,6 +109,17 @@ async function once(
 
     (spinner as Spinner | null)?.succeed();
     printResult(result);
+    if (hasPersistedSummary) {
+      const skipped =
+        persistedSkipped > 0
+          ? chalk.yellow(`, ${persistedSkipped} skipped`)
+          : '';
+      console.log(
+        chalk.dim(
+          `Applied artifacts: ${persistedWritten} written${skipped}`,
+        ),
+      );
+    }
   } catch (err) {
     (spinner as Spinner | null)?.fail();
     const message = err instanceof Error ? err.message : String(err);
@@ -113,12 +132,12 @@ async function interactive(
   client: BridgeClient,
   options: RunOptions,
 ): Promise<void> {
-  console.log(chalk.bold('\n🤖 Agentic Pipeline — Interactive Mode'));
+  console.log(chalk.bold('\n🤖 Sajkatav Pipeline — Interactive Mode'));
   console.log(chalk.dim('Type your task. "exit" to quit.\n'));
 
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const ask = (): void => {
-    rl.question(chalk.green('agentic> '), async (line: string) => {
+    rl.question(chalk.green('sajkatav> '), async (line: string) => {
       const input = line.trim();
       if (!input) {
         ask();
