@@ -12,10 +12,10 @@ export const defaultConfig: AppConfig = {
   retries: 1,
 
   models: {
-    orchestrator: 'claude-opus-4-20250514',
-    specGenerator: 'claude-sonnet-4-20250514',
-    coder: 'claude-sonnet-4-20250514',
-    tester: 'claude-sonnet-4-20250514',
+    orchestrator: 'gpt-4o',
+    specGenerator: 'gpt-4o',
+    coder: 'gpt-4o',
+    tester: 'gpt-4o',
   },
 
   tester: {
