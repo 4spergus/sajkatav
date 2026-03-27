@@ -1,0 +1,35 @@
+{
+  "name": "web-agentic-pipeline",
+  "version": "1.0.0",
+  "description": "Agentic pipeline — Orchestrator, Spec Generator, Coder, Tester — powered by Copilot",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/cli",
+    "packages/vscode-extension"
+  ],
+  "scripts": {
+    "publish:dev": "npm run build && npm run package:ext && npm run install:ext",
+    "build": "npm run build:core && npm run build:cli && npm run build:ext",
+    "build:core": "cd packages/core && npm run build",
+    "build:cli": "cd packages/cli && npm run build",
+    "build:ext": "cd packages/vscode-extension && node build.js",
+    "typecheck": "tsc --build --force",
+    "typecheck:watch": "tsc --build --watch",
+    "clean": "rm -rf packages/core/dist packages/cli/dist packages/vscode-extension/out packages/*/tsconfig.tsbuildinfo",
+    "cli": "node packages/cli/bin/agentic.js",
+    "package:ext": "cd packages/vscode-extension && npm run package",
+    "install:ext": "./scripts/extension-setup.sh ./packages/vscode-extension/agentic-pipeline-vscode-1.0.0.vsix"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.8.0",
+    "@swc/core": "^1.15.21",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.2"
+  }
+}

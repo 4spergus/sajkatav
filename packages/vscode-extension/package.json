@@ -1,0 +1,151 @@
+{
+  "name": "agentic-pipeline-vscode",
+  "displayName": "Agentic Pipeline",
+  "description": "Orchestrator → Spec → Coder → Tester pipeline via GitHub Copilot",
+  "version": "1.0.0",
+  "publisher": "agentic-pipeline",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthropic-ai/agentic-pipeline.git",
+    "directory": "packages/vscode-extension"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "AI",
+    "Programming Languages",
+    "Testing"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:agentic-pipeline.run",
+    "onCommand:agentic-pipeline.startBridge",
+    "onCommand:agentic-pipeline.stopBridge"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "build": "node build.js",
+    "typecheck": "tsc --noEmit",
+    "watch": "node build.js --watch",
+    "package": "npx @vscode/vsce package --no-dependencies"
+  },
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "agentic-pipeline.agent",
+        "fullName": "Agentic Pipeline",
+        "name": "pipeline",
+        "description": "Run the Orchestrator → Spec → Coder → Tester pipeline",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "run",
+            "description": "Run the full pipeline"
+          },
+          {
+            "name": "plan",
+            "description": "Orchestrator: create a plan"
+          },
+          {
+            "name": "spec",
+            "description": "Spec Generator: create file specs"
+          },
+          {
+            "name": "code",
+            "description": "Coder: implement from plan/spec"
+          },
+          {
+            "name": "test",
+            "description": "Tester: generate unit tests"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "agentic-pipeline.run",
+        "title": "Agentic Pipeline: Run"
+      },
+      {
+        "command": "agentic-pipeline.startBridge",
+        "title": "Agentic Pipeline: Start CLI Bridge"
+      },
+      {
+        "command": "agentic-pipeline.stopBridge",
+        "title": "Agentic Pipeline: Stop CLI Bridge"
+      }
+    ],
+    "configuration": {
+      "title": "Agentic Pipeline",
+      "properties": {
+        "agenticPipeline.models.orchestrator": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "Model for the Orchestrator"
+        },
+        "agenticPipeline.models.specGenerator": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "Model for the Spec Generator"
+        },
+        "agenticPipeline.models.coder": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "Model for the Coder"
+        },
+        "agenticPipeline.models.tester": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "Model for the Tester"
+        },
+        "agenticPipeline.tester.framework": {
+          "type": "string",
+          "enum": [
+            "vitest",
+            "jest",
+            "node:test"
+          ],
+          "default": "vitest",
+          "description": "Test framework"
+        },
+        "agenticPipeline.bridge.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-start the CLI bridge server on activation"
+        },
+        "agenticPipeline.bridge.port": {
+          "type": "number",
+          "default": 9786,
+          "description": "Port for the CLI bridge server"
+        },
+        "agenticPipeline.freeTier.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable free tier models (GPT-4o, GPT-4.1) for the pipeline"
+        },
+        "agenticPipeline.freeTier.models": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "GPT-4o",
+            "GPT-4.1"
+          ],
+          "description": "Free tier models available for the pipeline"
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@anthropic-ai/agentic-pipeline": "1.0.0",
+    "@types/node": "^25.5.0",
+    "@types/vscode": "^1.93.0",
+    "esbuild": "^0.24.0"
+  },
+  "extensionDependencies": [
+    "github.copilot-chat"
+  ]
+}

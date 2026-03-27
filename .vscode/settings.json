@@ -1,0 +1,15 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "agenticPipeline.models.orchestrator": "claude-opus-4-20250514",
+  "agenticPipeline.models.specGenerator": "claude-sonnet-4-20250514",
+  "agenticPipeline.models.coder": "claude-sonnet-4-20250514",
+  "agenticPipeline.models.tester": "claude-sonnet-4-20250514",
+  "agenticPipeline.tester.framework": "vitest",
+  "agenticPipeline.bridge.autoStart": true,
+  "agenticPipeline.bridge.port": 9786,
+  "agenticPipeline.freeTier.enabled": true,
+  "agenticPipeline.freeTier.models": [
+    "GPT-4o",
+    "GPT-4.1"
+  ]
+}
