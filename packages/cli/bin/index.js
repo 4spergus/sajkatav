@@ -13,12 +13,14 @@
  *   sajkatav init                           Scaffold pipeline config
  *   sajkatav status                         Check bridge connection
  *   sajkatav models                         List available Copilot models
+ *   sajkatav stop                           Stop the VS Code bridge server
  */
 
 import { program } from "commander";
 import { run } from "../dist/commands/run.js";
 import { status } from "../dist/commands/status.js";
 import { models } from "../dist/commands/models.js";
+import { stop } from "../dist/commands/stop.js";
 
 program
   .name("sajkatav")
@@ -45,6 +47,12 @@ program
   .description("Check if the VS Code bridge is running")
   .option("-p, --port <port>", "Bridge port", "9786")
   .action(status);
+
+program
+  .command("stop")
+  .description("Stop the VS Code bridge server")
+  .option("-p, --port <port>", "Bridge port", "9786")
+  .action(stop);
 
 program
   .command("models")

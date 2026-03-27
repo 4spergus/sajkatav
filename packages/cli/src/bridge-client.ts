@@ -67,6 +67,10 @@ export class BridgeClient {
     }
   }
 
+  async stopBridge(): Promise<void> {
+    return this.#post("/stop", {});
+  }
+
   /** List available Copilot models. */
   async getModels(): Promise<ModelsResponse> {
     return this.#get<ModelsResponse>("/models");

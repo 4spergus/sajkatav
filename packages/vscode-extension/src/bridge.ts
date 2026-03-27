@@ -119,6 +119,12 @@ export class BridgeServer {
         return;
       }
 
+      if (req.method === "POST" && path === "/stop") {
+        this.stop();
+        send(res, 200, { ok: true });
+        return;
+      }
+
       send(res, 404, { error: "Not found" });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
